@@ -1,0 +1,4 @@
+pydatabase==1.0.0
+pymysql==0.7.6
+requests==2.11.1
+tabler==1.0.2
