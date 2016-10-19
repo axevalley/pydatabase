@@ -4,7 +4,6 @@
 
 from . databaseconnection import DatabaseConnection
 from . databasecolumn import DatabaseColumn
-from tabler import Tabler as Table
 
 
 class DatabaseTable(DatabaseConnection):
@@ -12,12 +11,13 @@ class DatabaseTable(DatabaseConnection):
     manipulating a MySQL Table.
     """
 
+    update_key = None
+    no_update_columns = ()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.table = kwargs['table']
         self.description = self.query("DESCRIBE " + self.table)
-        self.no_update_columns = ()
-        self.update_key = None
         self.columns = []
         for column in self.description:
             self.columns.append(DatabaseColumn(column))
@@ -57,10 +57,6 @@ class DatabaseTable(DatabaseConnection):
         inserted.
         """
 
-        self.check_file_compatable(update_file)
-        if self.update_key is not None:
-            existing_ids = self.get_column_as_strings(self.update_key)
-
         query = "INSERT INTO " + self.table + " "
         query += self.get_query_columns_string() + " VALUES "
         update_rows = []
@@ -73,8 +69,7 @@ class DatabaseTable(DatabaseConnection):
             for column in self.get_columns():
                 if column != self.update_key:
                     duplicate_updates.append(
-                        "`" + column + "`=VALUES(`" + column + "`)"
-                    )
+                        "`" + column + "`=VALUES(`" + column + "`)")
             query += ', '.join(duplicate_updates)
         query = query + ";"
 
@@ -91,21 +86,6 @@ class DatabaseTable(DatabaseConnection):
                 self.query(query)
         else:
             self.query(self.get_update_from_file_query(update_file))
-
-    def check_file_compatable(self, update_file):
-        """ Used by update_from_file to ensure the passed file is
-        compatible with the table.
-        Checks the passed object is a .csv file or a Table.
-        Also checks the files columns match those of the provided file.
-        It will ignore columns listed in self.no_update_columns
-        (Required if file does not contain ID column).
-        """
-
-        assert isinstance(update_file, Table), 'Can only update form CsvFile.'
-        for column in self.get_query_columns():
-            if column not in update_file.header:
-                return False
-        return True
 
     def get_column(self, column):
         """ Uses DatabaseConnection.get_column() to return a set

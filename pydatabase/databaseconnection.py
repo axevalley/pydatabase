@@ -4,38 +4,33 @@
 
 import pymysql
 
-from . query import Query
-
 
 class DatabaseConnection(object):
     """ Used as an interface with a local MySQL instance
     Requires pymysql (https://pypi.python.org/pypi/PyMySQL#downloads)
     """
 
+    host = 'localhost'
+    user = 'axevalley'
+    password = 'fred'
+    charset = 'utf8'
+
     def __init__(self, **kwargs):
         self.database = kwargs['database']
         if 'host' in kwargs:
             self.host = kwargs['host']
-        else:
-            self.host = 'localhost'
         if 'user' in kwargs:
             self.user = kwargs['user']
-        else:
-            self.user = 'axevalley'
-        if 'passwd' in kwargs:
-            self.passwd = kwargs['passwd']
-        else:
-            self.passwd = 'fred'
+        if 'password' in kwargs:
+            self.password = kwargs['password']
         if 'charset' in kwargs:
             self.charset = kwargs['charsest']
-        else:
-            self.charset = 'utf8'
 
     def query(self, query):
         """ Sends query to MySQL database and returns query results.  """
 
         conn = pymysql.connect(host=self.host, user=self.user,
-                               passwd=self.passwd, db=self.database,
+                               password=self.password, db=self.database,
                                charset=self.charset)
         cur = conn.cursor()
         try:
