@@ -8,7 +8,7 @@ setup(
     description='Simple interface for MySQL databases',
     author='Luke Shiner',
     author_email='luke@lukeshiner.com',
-    url='http://pydatabase.lukeshiner.com',
+    url='https://github.com/axevalley/pydatabase.git',
     keywords=['database', 'mysql', 'simple'],
     install_requires=['tabler', 'pymysql'],
     packages=find_packages())
